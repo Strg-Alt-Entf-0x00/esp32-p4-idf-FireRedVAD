@@ -2,7 +2,7 @@
 
 A professional, hardware-accelerated Voice Activity Detection (VAD) pipeline specifically optimized for the **ESP32-P4 (Chip Revision v1.3)**. This repository provides a fully multithreaded, real-time AI audio pipeline running on the **Waveshare ESP32-P4-WIFI6** board.
 
-## 🚀 Key Features
+## Key Features
 
 * **Multithreaded Audio Pipeline:** Lock-free Producer/Consumer ringbuffers safely separate the I2S Audio-Rx (Core 0), DSP processing (Core 0), and Neural Network inference (Core 1). This ensures zero audio drops even if the AI or SD card blocks momentarily.
 * **Dual-Core Math (Model Dependent):** Matrix multiplications for large models (FP32/INT16) are split across both CPU cores. To maximize efficiency, heavily quantized **INT8** models skip the dual-core overhead and use an ultra-fast **single-core fast path** (~5.5ms per 10ms frame).
@@ -10,7 +10,7 @@ A professional, hardware-accelerated Voice Activity Detection (VAD) pipeline spe
 * **Smart Speaker Audio Pipeline:** Features adaptive Automatic Gain Control (AGC) with noise-gating and attack/decay smoothing.
 * **Auto-Calibration:** Boot-time environmental noise calibration (1-second absolute silence check) for dynamic Pre-VAD thresholding.
 
-## 🎤 Audio Frontend & AGC Results
+## Audio Frontend & AGC Results
 
 We achieved a highly robust audio frontend using the INMP441 I2S microphone combined with a custom Automatic Gain Control (AGC) and DC-Offset High-Pass filter:
 - **Dynamic Range Compression**: Without AGC, voice volume drops steeply from -27 dB (at 10cm) to -47 dB (at 2m). With AGC enabled, the volume stays rock-solid between -30 dB and -37 dB!
@@ -18,9 +18,9 @@ We achieved a highly robust audio frontend using the INMP441 I2S microphone comb
 - **SNR**: Crystal clear 23 dB SNR.
 - **Golden Test**: Bit-parity and VAD-quality mathematically verified.
 
-👉 *For deep technical details on our hardware tests, the Golden Test mathematics, FFT analyses, and AGC performance, read our [Engineering & Hardware Insights](docs/ENGINEERING_INSIGHTS.md).*
+*For deep technical details on our hardware tests, the Golden Test mathematics, FFT analyses, and AGC performance, read our [Engineering & Hardware Insights](docs/ENGINEERING_INSIGHTS.md).*
 
-## 🎛️ Hardware Setup (Waveshare ESP32-P4-WIFI6)
+## Hardware Setup (Waveshare ESP32-P4-WIFI6)
 
 This project is optimized for the **Waveshare ESP32-P4-WIFI6** development board.
 
@@ -39,14 +39,14 @@ The board includes an onboard analog SMD microphone routed through the ES8311 co
 * **Pins:** I2C (`SDA`=GPIO7, `SCL`=GPIO8), I2S0 (`MCLK`=GPIO13, `BCLK`=GPIO12, `WS`=GPIO10, `DIN`=GPIO9).
 * *Note:* Due to analog interference from the LCD and 2.4GHz WiFi traces, this microphone is suitable as a secondary environment sensor but not recommended as the primary VAD input.
 
-## 📦 Using it as an ESP-IDF Component
+## Using it as an ESP-IDF Component
 
 You can integrate this VAD directly into your own firmware:
 1. Copy the `components/esp_firevad` folder into your project's `components/` directory.
 2. Link it in your `CMakeLists.txt` via `REQUIRES esp_firevad`.
 3. Use the C-API (`esp_firevad.h` and `esp_firevad_dsp.h`) to extract features and run inferences.
 
-## 🧠 Neural Network Models & Tools
+## Neural Network Models & Tools
 
 This project uses the official FireRedVAD weights, which must be downloaded and optionally converted.
 
@@ -61,12 +61,12 @@ This project uses the official FireRedVAD weights, which must be downloaded and 
 
 Models are heavily quantized (`INT8`) to fit into the ESP32's L2 Cache and execute in under **6 milliseconds** per 10ms audio frame on a single 360MHz RISC-V core.
 
-## 🛠️ Getting Started
+## Getting Started
 
 To compile the firmware, explore the hardware, and test the microphone pipeline, navigate to the fully featured CLI example:
-👉 **[examples/console_vad](examples/console_vad)**
+**[examples/console_vad](examples/console_vad)**
 
-## 📊 Performance Benchmarks & Quantization (ESP32-P4)
+## Performance Benchmarks & Quantization (ESP32-P4)
 
 *(Last Benchmark Run: 2026-08-21 17:26:16)*
 
@@ -122,13 +122,13 @@ All numbers below represent the **raw Neural Network (NN) inference latency** me
 Standard per-tensor INT8 quantization (`int8`) assigns **one** global scale factor per weight matrix. DFSMN architectures have wide variance in weight distribution across output channels - a single scale factor cannot capture this range accurately, causing silent accuracy degradation.
 **Per-Channel INT8 (`int8-ch`)** assigns **one scale factor per output channel**. This preserves near-FP32 accuracy at INT8 speed and memory cost.
 
-## ⚠️ Known Limitations (Scientific Honesty)
+## Known Limitations (Scientific Honesty)
 
 We prioritize scientific honesty over marketing claims:
 1. **Background Noise Susceptibility**: FireRedVAD performs exceptionally well in quiet or moderately noisy environments. In low SNR conditions (loud machinery, wind), false positive rates increase (e.g. babble noise is often detected as speech-like).
 2. **APLL Sharing**: When I2S0 (ES8311 codec, TX) and I2S1 (INMP441, RX) are both active, the shared APLL runs at 8,191,999 Hz instead of 8,192,000 Hz. This 1Hz deviation is expected behavior.
 
-## 📜 License
+## License
 
 This project is licensed under the **Apache License 2.0**.
 Based on the architecture of [FireRedVAD](https://github.com/FireRedTeam/FireRedVAD) by Xiaohongshu (FireRedTeam).
