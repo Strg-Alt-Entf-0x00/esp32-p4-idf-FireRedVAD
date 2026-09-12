@@ -8,14 +8,14 @@ models_pth/
 # ESP-IDF managed components (auto-downloaded via idf_component.yml)
 examples/*/managed_components/
 # Local backup archives
-tools/backup/backups/
+tools_py/backup/backups/
 # Private audio recordings & golden test data dumps
-tools/mic_test/mic_data/
-tools/golden_test/esp32_dumps/
-tools/golden_test/golden_dumps/
-tools/golden_test/FireRedVAD_Repo/
-tools/golden_test/*.png
-tools/golden_test/*.raw
+tools_py/mic_test/mic_data/
+tools_py/golden_test/esp32_dumps/
+tools_py/golden_test/golden_dumps/
+tools_py/golden_test/FireRedVAD_Repo/
+tools_py/golden_test/*.png
+tools_py/golden_test/*.raw
 # Python
 __pycache__/
 *.pyc
