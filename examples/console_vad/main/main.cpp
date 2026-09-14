@@ -20,7 +20,7 @@
 #include "cmd_vad_cli.h"
 #include "audio_manager.h"
 #include "vad_runner.h"
-#include "esp_uart_filebridge.h"
+#include "esp_idf_uart_filebridge.h"
 #include "driver/uart.h"
 
 static const char* TAG = "MAIN";
@@ -59,12 +59,12 @@ static void print_banner(void) {
 static esp_err_t init_uart_file_protocol(void) {
     ESP_LOGI(TAG, "Initializing UART File Transfer Protocol...");
     
-    // We use the new esp-uart-filebridge component
-    esp_uart_filebridge_config_t cfg = ESP_UART_FILEBRIDGE_CONFIG_DEFAULT();
+    // Use the esp-idf-uart-filebridge component API exposed by the managed dependency
+    esp_idf_uart_filebridge_config_t cfg = ESP_IDF_UART_FILEBRIDGE_CONFIG_DEFAULT();
     // Default pins are correct for Waveshare ESP32-P4-WIFI6 (TX:30, RX:31, RTS:50, CTS:29)
     // Default baud is 3000000.
     
-    return esp_uart_filebridge_init(&cfg);
+    return esp_idf_uart_filebridge_init(&cfg);
 }
 extern "C" void app_main(void) {
     ESP_LOGI(TAG, "Starting FireVAD System");
