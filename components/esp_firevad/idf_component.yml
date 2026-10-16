@@ -1,4 +1,0 @@
-dependencies:
-  espressif/esp-dsp: "^1.8.2"  # Latest stable version (compatible with 1.8.x, 1.9.x)
-url: "https://github.com/Strg-Alt-Entf-0x00/firered-vad-esp32-p4"
-

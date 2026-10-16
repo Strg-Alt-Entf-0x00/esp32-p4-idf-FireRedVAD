@@ -1,0 +1,20 @@
+version: "1.0.0"
+description: "FireRed VAD (Voice Activity Detection) component for ESP32-P4 - High-performance on-device VAD using optimized FSMN neural network"
+url: "https://github.com/Strg-Alt-Entf-0x00/esp32-p4-idf-FireRedVAD"
+
+dependencies:
+  idf:
+    version: ">=5.3.0"
+  
+  espressif/esp-dsp: "^1.8.2"  # Latest stable version (compatible with 1.8.x, 1.9.x)
+
+files:
+  exclude:
+    - "examples/**/build/**/*"
+    - "examples/**/managed_components/**/*"
+    - "models_pth/**/*"
+    - "tools_py/**/*"
+    - ".docs/**/*"
+    - ".git/**/*"
+    - "**/.DS_Store"
+
