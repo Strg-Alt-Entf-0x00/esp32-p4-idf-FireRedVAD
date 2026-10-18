@@ -13,12 +13,29 @@ A professional, hardware-accelerated Voice Activity Detection (VAD) pipeline spe
 ## Audio Frontend & AGC Results
 
 We achieved a highly robust audio frontend using the INMP441 I2S microphone combined with a custom Automatic Gain Control (AGC) and DC-Offset High-Pass filter:
-- **Dynamic Range Compression**: Without AGC, voice volume drops steeply from -27 dB (at 10cm) to -47 dB (at 2m). With AGC enabled, the volume stays rock-solid between -30 dB and -37 dB!
-- **Distance Boost**: The AGC automatically boosts weak signals at a 2-meter distance by +10 dB, while seamlessly throttling loud, up-close speech.
-- **SNR**: Crystal clear 23 dB SNR.
-- **Golden Test**: Bit-parity and VAD-quality mathematically verified.
 
-*For deep technical details on our hardware tests, the Golden Test mathematics, FFT analyses, and AGC performance, read our [Engineering & Hardware Insights](docs/ENGINEERING_INSIGHTS.md).*
+### AGC Performance (Distance Test)
+
+| Distance | Volume WITHOUT AGC | Volume WITH AGC | Effect |
+|----------|-------------------|-----------------|--------|
+| **0.1m (Close)** | -27.23 dBFS | **-30.91 dBFS** | AGC throttled (attenuation) |
+| **0.5m** | -40.59 dBFS | **-33.69 dBFS** | AGC boosted |
+| **1.0m** | -44.73 dBFS | **-37.53 dBFS** | AGC massively boosted |
+| **2.0m** | -47.88 dBFS | **-36.93 dBFS** | AGC boosted by > 10 dB |
+
+**Key Benefits:**
+- **Dynamic Range Compression**: Without AGC, voice volume drops from -27 dB (10cm) to -47 dB (2m). With AGC enabled, volume stays consistent between -30 dB and -37 dB.
+- **Distance Boost**: AGC automatically boosts weak signals at 2m by +10 dB while throttling loud up-close speech.
+- **SNR**: Crystal clear **23.2 dB SNR** (INMP441 digital microphone).
+
+### Golden Test Validation
+
+The C++ ESP32 implementation was mathematically verified against the original PyTorch model:
+- **PCM Audio Input**: MSE = 0.000000 (bit-perfect)
+- **FBANK Features**: MSE = 3.83 (streaming optimizations vs offline processing)
+- **NN Inference Output**: MSE = 0.001 (statistically identical)
+
+**Conclusion**: The ESP32 C++ engine is mathematically sound and production-ready.
 
 ## Hardware Setup (Waveshare ESP32-P4-WIFI6)
 
@@ -36,8 +53,19 @@ For the best AI inference results, an external digital I2S microphone (e.g., **I
 ### Fallback/Onboard Microphone (ES8311)
 
 The board includes an onboard analog SMD microphone routed through the ES8311 codec.
-* **Pins:** I2C (`SDA`=GPIO7, `SCL`=GPIO8), I2S0 (`MCLK`=GPIO13, `BCLK`=GPIO12, `WS`=GPIO10, `DIN`=GPIO9).
-* *Note:* Due to analog interference from the LCD and 2.4GHz WiFi traces, this microphone is suitable as a secondary environment sensor but not recommended as the primary VAD input.
+* **Pins:** I2C (`SDA`=GPIO7, `SCL`=GPIO8), I2S0 (`MCLK`=GPIO13, `BCLK`=GPIO12, `WS`=GPIO10, `DIN`=GPIO9, `DOUT`=GPIO11).
+* **SNR**: 20.7 dB (at maximum 42 dB PGA gain)
+* **Limitations**: Due to analog interference from LCD and 2.4GHz WiFi traces, this microphone is suitable as a secondary environment sensor but not recommended as the primary VAD input. Additionally, the ES8311 is limited to Mono recording (no beamforming possible).
+
+### Microphone Comparison Summary
+
+| Feature | INMP441 (Digital I2S) | ES8311 (Analog Codec) |
+|---------|----------------------|---------------------|
+| **SNR** | **23.2 dB** | 20.7 dB |
+| **Noise Floor** | -67.99 dBFS | -52.67 dBFS |
+| **EMI Immunity** | Excellent (digital) | Susceptible (analog) |
+| **Stereo/Beamforming** | ✅ Possible (dual INMP441) | ❌ Mono only |
+| **Recommendation** | ✅ **Primary microphone** | ⚠️ Fallback/testing |
 
 ## Using it as an ESP-IDF Component
 
@@ -125,8 +153,14 @@ Standard per-tensor INT8 quantization (`int8`) assigns **one** global scale fact
 ## Known Limitations (Scientific Honesty)
 
 We prioritize scientific honesty over marketing claims:
-1. **Background Noise Susceptibility**: FireRedVAD performs exceptionally well in quiet or moderately noisy environments. In low SNR conditions (loud machinery, wind), false positive rates increase (e.g. babble noise is often detected as speech-like).
-2. **APLL Sharing**: When I2S0 (ES8311 codec, TX) and I2S1 (INMP441, RX) are both active, the shared APLL runs at 8,191,999 Hz instead of 8,192,000 Hz. This 1Hz deviation is expected behavior.
+
+1. **Background Noise Susceptibility**: FireRedVAD performs exceptionally well in quiet or moderately noisy environments. In low SNR conditions (loud machinery, wind), false positive rates increase (e.g., babble noise is often detected as speech-like).
+
+2. **APLL Sharing**: When I2S0 (ES8311 codec, TX) and I2S1 (INMP441, RX) are both active, the shared APLL runs at 8,191,999 Hz instead of 8,192,000 Hz. This 1Hz deviation is expected ESP32-P4 hardware behavior.
+
+3. **DC-Offset Pop (ES8311)**: The analog ES8311 microphone produces a loud "pop" in the first millisecond when powering up (DC-offset from 0V to bias voltage ~1.6V). This is handled by the 80Hz high-pass filter in the DSP pipeline before VAD inference.
+
+4. **INT8 Quantization**: Standard per-tensor INT8 quantization causes accuracy degradation in DFSMN architectures due to wide weight variance. **Use INT8-CH (per-channel quantization)** for production to preserve near-FP32 accuracy.
 
 ## License
 

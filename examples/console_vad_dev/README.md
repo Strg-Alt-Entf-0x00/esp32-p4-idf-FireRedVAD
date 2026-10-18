@@ -9,7 +9,33 @@ This console (REPL) allows you to interactively load AI models, stream audio fro
 - Waveshare ESP32-P4-WIFI6 Development Board
 - SD Card formatted as FAT32
 - Python 3.8+ (for pushing models via the custom UART protocol)
-- Optional but recommended: **INMP441** digital I2S microphone (Pins: `BCLK=20`, `WS=21`, `DIN=22`).
+
+### Microphone Options
+
+#### 🏆 INMP441 Digital I2S Microphone (Recommended)
+- **Pins:** BCLK=20, WS=21, DIN=22
+- **SNR:** **23.2 dB** (excellent)
+- **Noise Floor:** -67.99 dBFS
+- **Performance at 1m distance:** -44.73 dBFS
+- **Advantages:**
+  - Digital signal - immune to EMI/WiFi interference on PCB
+  - Crystal clear, low-noise signal
+  - Supports **stereo beamforming** (dual INMP441 wiring to same I2S bus)
+  - No DC-offset or analog artifacts
+- **Roadmap:** Easily expandable to stereo by wiring a 2nd INMP441 (flip L/R pin) for future beamforming and DoA detection
+
+#### ES8311 Onboard Analog Microphone (Fallback)
+- **Interface:** I2C (SDA=7, SCL=8) + I2S0 (MCLK=13, BCLK=12, WS=10, DIN=11, DOUT=9)
+- **SNR:** 20.7 dB (at maximum 42 dB PGA gain)
+- **Noise Floor:** -52.67 dBFS (requires aggressive gain boost)
+- **Performance at 1m distance:** -31.91 dBFS (with 42 dB gain)
+- **Limitations:**
+  - Analog - highly susceptible to interference (LCD, MIPI, WiFi "tick tick" noise)
+  - Requires hardware PGA gain boost (36-42 dB) for far-field VAD
+  - **DC-offset "pop"** at startup (loud crack in first millisecond - handled by 80Hz HPF)
+  - **Mono only** - physically limited to ONE ADC input (no beamforming possible)
+  
+**Verdict:** For production VAD, use the INMP441. The ES8311 is suitable for quick testing and as an environment sensor fallback.
 
 ## 1️⃣ Download and Transfer the AI Models
 

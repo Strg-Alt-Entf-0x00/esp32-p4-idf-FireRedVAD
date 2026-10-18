@@ -85,17 +85,28 @@ ls example_wave
 - **USB-C Cable** (for power + serial console)
 
 ### Optional Microphones
-The example supports two microphone options:
 
-#### Option A: INMP441 Digital I2S Microphone (Recommended)
+#### Option A: INMP441 Digital I2S Microphone (🏆 Recommended)
 - **Pins:** BCLK=20, WS=21, DIN=22
-- **Advantages:** No analog noise, better SNR
+- **SNR:** **23.2 dB** (excellent)
+- **Noise Floor:** -67.99 dBFS
+- **Advantages:** 
+  - Digital signal - immune to EMI/WiFi interference
+  - Crystal clear audio quality
+  - Supports **stereo beamforming** (dual INMP441 setup)
 - **Select with:** `mic_select inmp441`
 
 #### Option B: ES8311 Onboard Codec (Built-in)
-- **Interface:** I2C + I2S0
-- **Advantages:** No external wiring needed
+- **Interface:** I2C (SDA=7, SCL=8) + I2S0 (MCLK=13, BCLK=12, WS=10, DIN=11, DOUT=9)
+- **SNR:** 20.7 dB (at maximum 42 dB PGA gain)
+- **Noise Floor:** -52.67 dBFS
+- **Limitations:**
+  - Analog - susceptible to PCB interference (LCD, WiFi)
+  - Mono only (no beamforming)
+  - DC-offset "pop" at startup (handled by 80Hz HPF)
 - **Select with:** `mic_select es8311`
+
+**Verdict:** For best VAD performance, use the external INMP441. The ES8311 is suitable for testing/fallback.
 
 ---
 
