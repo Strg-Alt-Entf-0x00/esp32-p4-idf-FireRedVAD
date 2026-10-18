@@ -61,7 +61,7 @@ extern "C" {
 // File System Configuration
 // ============================================================================
 
-#define FS_MOUNT_POINT              "/sd"             ///< SD Card mount path
+#define FS_MOUNT_POINT              "/spiffs"         ///< SPIFFS mount path (models embedded in flash)
 #define MODEL_FILE_EXTENSION        ".frvd"           ///< Model file extension
 #define WAV_FILE_EXTENSION          ".wav"            ///< WAV file extension
 

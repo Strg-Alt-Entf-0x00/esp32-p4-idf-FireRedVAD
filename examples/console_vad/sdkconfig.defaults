@@ -24,13 +24,15 @@ CONFIG_SPIRAM=y
 CONFIG_SPIRAM_USE_MALLOC=y
 
 # ============================================================================
-# SPIFFS Configuration (16MB partition requires larger page size)
+# SPIFFS Configuration (14MB models partition)
 # ============================================================================
 CONFIG_SPIFFS_MAX_PARTITIONS=3
 CONFIG_SPIFFS_PAGE_SIZE=512
 CONFIG_SPIFFS_OBJ_NAME_LEN=64
 CONFIG_SPIFFS_USE_MAGIC=y
 CONFIG_SPIFFS_USE_MAGIC_LENGTH=y
+CONFIG_SPIFFS_META_LENGTH=4
+CONFIG_SPIFFS_USE_MTIME=y
 
 # ============================================================================
 # FreeRTOS Configuration

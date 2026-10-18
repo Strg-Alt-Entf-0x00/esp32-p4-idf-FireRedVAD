@@ -1,0 +1,43 @@
+dependencies:
+  Strg-Alt-Entf-0x00/esp-uart-filebridge:
+    component_hash: 8362237e467f4319cc71dea38323e14c27021eea7fd60116cc9898200273f312
+    dependencies:
+    - name: idf
+      version: '>=5.2.0'
+    source:
+      git: https://github.com/Strg-Alt-Entf-0x00/esp-uart-filebridge.git
+      path: .
+      type: git
+    version: 03f697c686c3d68e8b7f5d2d85094da0b6065d85
+  espressif/esp-dsp:
+    component_hash: ed9ac175b14e0414399a2b33c525579414b5bad19a2a67b12ea212def96f9a98
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=4.2'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 1.8.2
+  espressif/esp_codec_dev:
+    component_hash: 4779f31a3ba3f9b38aee1afe6ccb9ba8f6108dc3a6e77d39d7d714e9a215371b
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=4.0'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 1.6.2
+  idf:
+    source:
+      type: idf
+    version: 6.0.2
+direct_dependencies:
+- Strg-Alt-Entf-0x00/esp-uart-filebridge
+- espressif/esp-dsp
+- espressif/esp_codec_dev
+- idf
+manifest_hash: a1d667847a1bf9fe047ed773e232ef674b37c87c21a0cb846f2863a1c8dccdb0
+target: esp32p4
+version: 3.0.0

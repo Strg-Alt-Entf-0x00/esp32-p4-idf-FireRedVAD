@@ -2,6 +2,10 @@ idf_component_register(SRCS "src/esp_firevad.cpp" "src/esp_firevad_dsp.cpp"
                        INCLUDE_DIRS "include"
                        PRIV_REQUIRES esp-dsp esp_timer)
 
+# Set component name explicitly (directory name is "esp32-p4-idf-FireRedVAD" but component should be "esp_firevad")
+# This is needed when the directory name doesn't match the expected component name
+set_property(TARGET ${COMPONENT_LIB} PROPERTY OUTPUT_NAME esp_firevad)
+
 # Aggressive compiler optimization flags for FireRedVAD inference performance
 # These flags provide ~6% performance improvement over standard -O2
 target_compile_options(${COMPONENT_LIB} PRIVATE 

@@ -124,7 +124,7 @@ static void list_directory(const char* base_path, int level) {
 }
 
 static int cmd_fs_ls(int argc, char **argv) {
-    const char* path = FS_MOUNT_POINT; // Default to SD card root
+    const char* path = FS_MOUNT_POINT; // Default to SPIFFS root
     if (argc > 1) {
         path = argv[1];
     }
@@ -336,75 +336,10 @@ static int cmd_agc_config(int argc, char **argv) {
 // ---------------------------------------------------------
 
 static int cmd_record_mic(int argc, char **argv) {
-    if (argc != 3) {
-        printf("Usage: record_mic <filename.wav> <duration_sec>\n");
-        return 1;
-    }
-    const char* filename = argv[1];
-    float duration_sec = atof(argv[2]);
-    if (duration_sec <= 0 || duration_sec > 60) {
-        printf("[ERROR] Duration must be 1-60 seconds\n");
-        return 1;
-    }
-    
-    if (!audio_manager_is_initialized()) {
-        printf("Initializing audio...\n");
-        if (audio_manager_init() != ESP_OK) return 1;
-    }
-    
-    char path[MAX_FILE_PATH];
-    snprintf(path, sizeof(path), "%s/%s", FS_MOUNT_POINT, filename);
-    
-    FILE* f = fopen(path, "wb");
-    if (!f) {
-        printf("[ERROR] Failed to open %s for writing\n", path);
-        return 1;
-    }
-    
-    // Write placeholder header
-    WavHeader dummy_header = {};
-    fwrite(&dummy_header, 1, sizeof(WavHeader), f);
-    
-    printf("Starting recording for %.1f seconds...\n", duration_sec);
-    audio_manager_start_capture();
-    
-    uint32_t total_samples = (uint32_t)(duration_sec * FIREVAD_SAMPLE_RATE);
-    uint32_t samples_read = 0;
-    const size_t chunk_size = FIREVAD_CHUNK_SAMPLES_100MS;
-    int16_t* buffer = (int16_t*)malloc(chunk_size * sizeof(int16_t));
-    if (!buffer) {
-        printf("[ERROR] Failed to allocate memory for recording\n");
-        fclose(f);
-        return 1;
-    }
-    
-    while (samples_read < total_samples) {
-        size_t to_read = chunk_size;
-        if (samples_read + to_read > total_samples) {
-            to_read = total_samples - samples_read;
-        }
-        int read = audio_manager_read(buffer, to_read, FIREVAD_I2S_READ_TIMEOUT_MS);
-        if (read > 0) {
-            fwrite(buffer, sizeof(int16_t), read, f);
-            samples_read += read;
-            if (samples_read % (FIREVAD_SAMPLE_RATE) == 0) {
-                printf("."); fflush(stdout);
-            }
-        } else {
-            printf("\n[ERROR] I2S read failed\n");
-            break;
-        }
-    }
-    
-    audio_manager_stop_capture();
-    free(buffer);
-    
-    uint32_t data_size = samples_read * sizeof(int16_t);
-    write_wav_header(f, data_size);
-    fclose(f);
-    
-    printf("\n[OK] Recording saved to %s (%.1f seconds)\n", filename, (float)samples_read / FIREVAD_SAMPLE_RATE);
-    return 0;
+    printf("[WARNING] Recording to SPIFFS is not recommended (read-only models partition).\n");
+    printf("This command has been disabled in this example.\n");
+    printf("For audio recording, please use the SD card version (console_vad_dev).\n");
+    return 1;
 }
 
 // cmd_play_wav removed (Dead Code)
@@ -553,18 +488,10 @@ static int cmd_vad_infer_wav(int argc, char **argv) {
 }
 
 static int cmd_vad_dump_golden(int argc, char **argv) {
-    if (argc != 2) {
-        printf("Usage: vad_dump_golden <filename.wav>\n");
-        return 1;
-    }
-    const char* filename = argv[1];
-    
-    if (!vad_runner_is_model_loaded()) {
-        printf("[ERROR] No model loaded. Use 'model_load' first.\n");
-        return 1;
-    }
-    
-    return vad_runner_dump_golden(filename);
+    printf("[WARNING] Golden dump requires writable filesystem.\n");
+    printf("This command has been disabled in the user example (SPIFFS is read-only).\n");
+    printf("For debugging features, please use console_vad_dev with SD card.\n");
+    return 1;
 }
 
 static int cmd_vad_calibrate(int argc, char **argv) {
@@ -773,10 +700,12 @@ static int cmd_benchmark(int argc, char **argv) {
 
 static int cmd_guide(int argc, char **argv) {
     printf("\n--- Quick Start Workflow ---\n");
-    printf("1. ls [path]              - Navigate the SD card and find files\n");
-    printf("2. vad_model_load <model> - Load a VAD model from the list\n");
-    printf("5. record_mic test.wav 5  - Record 5s from mic to test hardware\n");
-    printf("7. vad_metrics            - View latency metrics\n\n");
+    printf("1. ls                        - List available files\n");
+    printf("2. vad_model_load <model>    - Load a model (e.g., models_frvd/firered-stream-vad-int8.frvd)\n");
+    printf("3. vad_infer_wav <wave>      - Test with example WAV (e.g., example_wave/speech-mic-test.wav)\n");
+    printf("4. vad_infer_mic 10          - Test live microphone for 10 seconds\n");
+    printf("5. vad_metrics               - View latency metrics\n\n");
+    printf("All models and test files are embedded in flash - no SD card needed!\n\n");
     return 0;
 }
 

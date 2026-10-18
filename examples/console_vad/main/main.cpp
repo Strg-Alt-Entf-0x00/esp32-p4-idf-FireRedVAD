@@ -11,6 +11,7 @@
 #include "esp_console.h"
 #include "nvs_flash.h"
 #include "esp_chip_info.h"
+#include "esp_spiffs.h"
 
 #include "esp_pm.h"
 
@@ -20,8 +21,6 @@
 #include "cmd_vad_cli.h"
 #include "audio_manager.h"
 #include "vad_runner.h"
-#include "esp_idf_uart_filebridge.h"
-#include "driver/uart.h"
 
 static const char* TAG = "MAIN";
 
@@ -56,16 +55,6 @@ static void print_banner(void) {
 }
 
 
-static esp_err_t init_uart_file_protocol(void) {
-    ESP_LOGI(TAG, "Initializing UART File Transfer Protocol...");
-    
-    // Use the esp-idf-uart-filebridge component API exposed by the managed dependency
-    esp_idf_uart_filebridge_config_t cfg = ESP_IDF_UART_FILEBRIDGE_CONFIG_DEFAULT();
-    // Default pins are correct for Waveshare ESP32-P4-WIFI6 (TX:30, RX:31, RTS:50, CTS:29)
-    // Default baud is 3000000.
-    
-    return esp_idf_uart_filebridge_init(&cfg);
-}
 extern "C" void app_main(void) {
     ESP_LOGI(TAG, "Starting FireVAD System");
     
@@ -85,8 +74,27 @@ extern "C" void app_main(void) {
         ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
-    init_uart_file_protocol();
-    esp_firevad_dsp_init();
+    
+    // Mount SPIFFS partition containing embedded models and test audio files
+    ESP_LOGI(TAG, "Mounting SPIFFS storage partition...");
+    esp_vfs_spiffs_conf_t spiffs_conf = {
+        .base_path = FS_MOUNT_POINT,
+        .partition_label = "storage",
+        .max_files = 10,
+        .format_if_mount_failed = false
+    };
+    ret = esp_vfs_spiffs_register(&spiffs_conf);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to mount SPIFFS (%s)", esp_err_to_name(ret));
+        ESP_LOGE(TAG, "Make sure you flashed the entire project including partition table!");
+    } else {
+        size_t total = 0, used = 0;
+        ret = esp_spiffs_info("storage", &total, &used);
+        if (ret == ESP_OK) {
+            ESP_LOGI(TAG, "SPIFFS: %d KB total, %d KB used", total / 1024, used / 1024);
+        }
+    }
+    
     esp_firevad_dsp_init();
     audio_manager_init();
     
