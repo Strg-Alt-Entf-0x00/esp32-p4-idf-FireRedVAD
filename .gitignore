@@ -1,50 +1,93 @@
-# ESP-IDF Build
+# ==============================================================================
+# ESP-IDF Build Artifacts
+# ==============================================================================
 build/
+**/build/
 sdkconfig
+**/sdkconfig
 sdkconfig.old
-# Models (download from HuggingFace)
+**/sdkconfig.old
+managed_components/
+**/managed_components/
+examples/*/managed_components/
+
+# Build cache
+.cache/
+**/.cache/
+
+# ==============================================================================
+# Models and Binary Data
+# ==============================================================================
 examples/*/models_frvd/
 models_pth/
-# ESP-IDF managed components (auto-downloaded via idf_component.yml)
-examples/*/managed_components/
-# Local backup archives
-tools_py/backup/backups/
-# Private audio recordings & golden test data dumps
+
+# ==============================================================================
+# Generated Data and Analysis
+# ==============================================================================
 tools_py/mic_test/mic_data/
 tools_py/golden_test/esp32_dumps/
 tools_py/golden_test/golden_dumps/
 tools_py/golden_test/FireRedVAD_Repo/
 tools_py/golden_test/*.png
 tools_py/golden_test/*.raw
+
+# ==============================================================================
 # Python
-__pycache__/
+# ==============================================================================
+*.py[cod]
 *.pyc
 *.pyo
+__pycache__/
+**/__pycache__/
 *.egg-info/
 .pytest_cache/
-venv/
 .venv/
-# Secrets & Credentials
-.env
-.env.*
+venv/
+
+# ==============================================================================
+# Secrets and Credentials
+# ==============================================================================
 *.key
 *.pem
+.env
+.env.*
 credentials.json
 secrets.json
-# IDE specific files
+
+# ==============================================================================
+# IDE and Editor
+# ==============================================================================
 *.code-workspace
 *.swp
 *.swo
+.cache/
+.clangd
 compile_commands.json
-# OS
-Thumbs.db
+.vscode/
+
+# ==============================================================================
 # Backups
+# ==============================================================================
 *.backup
 *.bak
-# Local dev folders
-.vscode/
-.clangd
-.docs/
+tools_py/backup/backups/
 
-# ESP-IDF cache
-.cache/
+# ==============================================================================
+# OS Generated Files
+# ==============================================================================
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+# ==============================================================================
+# Reference and Archive Code
+# ==============================================================================
+.archive/
+.docs/
+.old_code/
+.reference_codes/
+tools_py/autonomous_dev/
