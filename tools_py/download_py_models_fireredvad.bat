@@ -6,8 +6,8 @@ echo.
 echo Downloading raw .pth.tar models from HuggingFace...
 echo.
 
-cd /d "%~dp0"
-python download_pth_models.py --all
+cd /d "%~dp0models_downloader"
+python download_py_models_fireredvad.py --all
 
 echo.
 pause

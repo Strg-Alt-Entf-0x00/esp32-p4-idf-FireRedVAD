@@ -1,14 +1,18 @@
 dependencies:
   Strg-Alt-Entf-0x00/esp-uart-filebridge:
-    component_hash: 8362237e467f4319cc71dea38323e14c27021eea7fd60116cc9898200273f312
+    component_hash: c6664dcf803640605c15c36576eb79e51edd0ae29f5a89f5faf268469b8a8f52
     dependencies:
     - name: idf
       version: '>=5.2.0'
+    - matches:
+      - if: $CONFIG{UART_FILEBRIDGE_BACKEND_LITTLEFS} == True
+      name: joltwallet/littlefs
+      version: ^1.14.8
     source:
       git: https://github.com/Strg-Alt-Entf-0x00/esp-uart-filebridge.git
       path: .
       type: git
-    version: 03f697c686c3d68e8b7f5d2d85094da0b6065d85
+    version: 6b6c62a96b989319bd01c6a79763491e2ee8e160
   espressif/esp-dsp:
     component_hash: ed9ac175b14e0414399a2b33c525579414b5bad19a2a67b12ea212def96f9a98
     dependencies:
@@ -33,11 +37,21 @@ dependencies:
     source:
       type: idf
     version: 6.0.2
+  joltwallet/littlefs:
+    component_hash: e1a0f4a6adf821759cb34703a91107bbdce5d7ff6f4728f40ab012bb87842974
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.0'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 1.23.1
 direct_dependencies:
 - Strg-Alt-Entf-0x00/esp-uart-filebridge
 - espressif/esp-dsp
 - espressif/esp_codec_dev
 - idf
-manifest_hash: a1d667847a1bf9fe047ed773e232ef674b37c87c21a0cb846f2863a1c8dccdb0
+manifest_hash: dac3e842520c78b6b81c8b55ecfc7ee9097fd389d7cb6b0381181e366e645d50
 target: esp32p4
 version: 3.0.0

@@ -1,6 +1,6 @@
 version: "1.0.0"
 description: "FireRed VAD (Voice Activity Detection) component for ESP32-P4 - High-performance on-device VAD using optimized FSMN neural network"
-url: "https://github.com/Strg-Alt-Entf-0x00/esp32-p4-idf-FireRedVAD"
+url: "https://github.com/Strg-Alt-Entf-0x00/esp32-p4-idf-fireredvad"
 
 dependencies:
   idf:

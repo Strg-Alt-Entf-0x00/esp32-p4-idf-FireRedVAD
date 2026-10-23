@@ -113,7 +113,7 @@ def main():
                         help="Model to download (can be specified multiple times)")
     parser.add_argument("--all", action="store_true",
                         help="Download all available models")
-    default_output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "models_pth"))
+    default_output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "models_pth"))
     parser.add_argument("--output-dir", default=default_output_dir,
                         help="Output directory for downloaded models")
     

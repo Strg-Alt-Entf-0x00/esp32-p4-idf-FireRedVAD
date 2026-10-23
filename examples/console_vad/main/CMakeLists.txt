@@ -2,7 +2,7 @@ idf_component_register(
     SRCS "main.cpp" "cmd_vad_cli.cpp"
     INCLUDE_DIRS "."
     REQUIRES 
-        esp32-p4-idf-FireRedVAD
+        esp32-p4-idf-fireredvad
         vad_app
         console
         nvs_flash

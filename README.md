@@ -74,20 +74,40 @@ You can integrate this VAD directly into your own firmware:
 2. Link it in your `CMakeLists.txt` via `REQUIRES esp_firevad`.
 3. Use the C-API (`esp_firevad.h` and `esp_firevad_dsp.h`) to extract features and run inferences.
 
-## Neural Network Models & Tools
+## Neural Network Models
 
-This project uses the official FireRedVAD weights, which must be downloaded and optionally converted.
+This project uses official FireRedVAD weights trained by FireRedTeam/Xiaohongshu.
 
-1. **Original Models:** If you want the original raw PyTorch/ONNX models (for research or manual conversion), run:
+**Pre-converted models are included in the repository** for immediate use:
+- Location: `examples/console_vad/models_frvd/` and `examples/console_vad_dev/models_frvd/`
+- Total size: ~27 MB (committed directly in Git)
+- No download step required for end users
+
+**Available quantization levels** (3 models × 4 quantizations):
+- `FP32` - Full precision (largest, most accurate)
+- `INT16` - 16-bit quantized (best balance)
+- `INT8` - 8-bit per-tensor quantized
+- `INT8-CH` - 8-bit per-channel quantized (recommended)
+
+### For Developers: Model Download & Conversion
+
+If you need to re-download or convert models from source:
+
+1. **Download Original PyTorch Models:**
    ```bash
-   python tools/download_pth_models.py
+   cd tools_py
+   download_py_models_fireredvad.bat
    ```
-2. **Optimized ESP32 Models (.frvd):** If you just want to run the code, use our pre-quantized `INT8` and `FP32` models specifically built for the ESP32:
-   ```bash
-   python examples/console_vad/tools/download_frvd_models.py
-   ```
+   This downloads from HuggingFace (FireRedTeam/FireRedVAD) into `models_pth/`
 
-Models are heavily quantized (`INT8`) to fit into the ESP32's L2 Cache and execute in under **6 milliseconds** per 10ms audio frame on a single 360MHz RISC-V core.
+2. **Convert to ESP32 .frvd Format:**
+   ```bash
+   cd tools_py
+   convert_all_models.bat
+   ```
+   This creates 4 quantization levels for each model in both example directories.
+
+Models are optimized for ESP32-P4 hardware with quantization to fit in L2 Cache, enabling sub-6ms inference on a single 360MHz RISC-V core.
 
 ## Getting Started
 
@@ -165,4 +185,21 @@ We prioritize scientific honesty over marketing claims:
 ## License
 
 This project is licensed under the **Apache License 2.0**.
-Based on the architecture of [FireRedVAD](https://github.com/FireRedTeam/FireRedVAD) by Xiaohongshu (FireRedTeam).
+
+### Attribution
+
+**FireRedVAD Models:**
+Based on [FireRedVAD](https://github.com/FireRedTeam/FireRedVAD) by Xiaohongshu (FireRedTeam)  
+License: Apache 2.0  
+Copyright (c) FireRedTeam
+
+The pre-converted `.frvd` model files included in this repository (`examples/*/models_frvd/`) are derived from the original PyTorch models available on HuggingFace (FireRedTeam/FireRedVAD) and converted to the ESP32-P4 native binary format.
+
+**Included Models:**
+- `firered-aed-*.frvd` - Acoustic Event Detection model
+- `firered-stream-vad-*.frvd` - Streaming VAD model  
+- `firered-vad-*.frvd` - Standard VAD model
+
+Each model available in 4 quantization levels (FP32, INT16, INT8, INT8-CH).
+
+These models are committed directly in the repository for immediate use without additional downloads.

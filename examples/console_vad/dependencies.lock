@@ -27,6 +27,6 @@ direct_dependencies:
 - espressif/esp-dsp
 - espressif/esp_codec_dev
 - idf
-manifest_hash: fa94fb613243288b292c0b309e2f4bd4117d4ff49939531f8aa26d4ab396411c
+manifest_hash: c750da1fbfe5920ed3e3f6ac0d294914cb6c0f6ea3e36d0eb9772e3fa62184b3
 target: esp32p4
 version: 3.0.0
